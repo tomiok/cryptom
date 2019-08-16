@@ -1,6 +1,8 @@
 package model
 
 import (
+	"bytes"
+	"encoding/gob"
 	"github.com/google/uuid"
 	"time"
 )
@@ -16,9 +18,9 @@ type Block struct {
 }
 
 func NewBlock(data string, prevBlockHash []byte) *Block {
-	identifier,_ :=uuid.NewUUID()
+	identifier, _ := uuid.NewUUID()
 
-	newBlock := &Block{identifier.String(), []byte(data), []byte{}, prevBlockHash,time.Now().Unix(),
+	newBlock := &Block{identifier.String(), []byte(data), []byte{}, prevBlockHash, time.Now().Unix(),
 		Header{}, 0}
 
 	pow := NewPow(newBlock)
@@ -27,4 +29,29 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 	newBlock.Hash = hash[:]
 	newBlock.Nonce = nonce
 	return newBlock
+}
+
+func (block *Block) serialize() []byte {
+	var res bytes.Buffer
+	encoder := gob.NewEncoder(&res)
+	err := encoder.Encode(block)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return res.Bytes()
+}
+
+func desearlize(b []byte) *Block {
+
+	var block Block
+	decoder := gob.NewDecoder(bytes.NewReader(b))
+	err := decoder.Decode(&block)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return &block
 }
