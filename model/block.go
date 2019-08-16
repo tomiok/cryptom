@@ -3,6 +3,7 @@ package model
 import (
 	"bytes"
 	"encoding/gob"
+	"fmt"
 	"github.com/google/uuid"
 	"time"
 )
@@ -31,7 +32,13 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 	return newBlock
 }
 
-func (block *Block) serialize() []byte {
+func NewGenesis() *Block {
+	fmt.Println("Creating the GENESIS block")
+	var block Block
+	return &block
+}
+
+func (block *Block) Serialize() []byte {
 	var res bytes.Buffer
 	encoder := gob.NewEncoder(&res)
 	err := encoder.Encode(block)
