@@ -1,8 +1,8 @@
 package model
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
+	"github.com/google/uuid"
+	"time"
 )
 
 type Block struct {
@@ -12,13 +12,19 @@ type Block struct {
 	PrevBlockHash []byte
 	Timestamp     int64
 	Header        Header
-	Nonce         int64
+	Nonce         int
 }
 
-func GenerateHash(block *Block) string {
-	record := block.Identifier + string(block.Hash) + string(block.Timestamp) + string(block.PrevBlockHash)
-	hashFunc := sha256.New()
-	hashFunc.Write([]byte(record))
-	hashed := hashFunc.Sum(nil)
-	return hex.EncodeToString(hashed)
+func NewBlock(data string, prevBlockHash []byte) *Block {
+	identifier,_ :=uuid.NewUUID()
+
+	newBlock := &Block{identifier.String(), []byte(data), []byte{}, prevBlockHash,time.Now().Unix(),
+		Header{}, 0}
+
+	pow := NewPow(newBlock)
+	nonce, hash := pow.Run()
+
+	newBlock.Hash = hash[:]
+	newBlock.Nonce = nonce
+	return newBlock
 }
