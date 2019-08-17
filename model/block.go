@@ -50,7 +50,7 @@ func (block *Block) Serialize() []byte {
 	return res.Bytes()
 }
 
-func desearlize(b []byte) *Block {
+func Desearlize(b []byte) *Block {
 
 	var block Block
 	decoder := gob.NewDecoder(bytes.NewReader(b))
