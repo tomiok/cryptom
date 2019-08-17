@@ -1,8 +1,14 @@
 package model
 
-import "github.com/boltdb/bolt"
+import (
+	"cryptom/db"
+)
 
 type BlockChain struct {
 	tip []byte
-	db *bolt.DB
+}
+
+func (bc *BlockChain) NewBlockChain() *BlockChain {
+	var tip [] byte
+	db = db.OpenForBc()
 }

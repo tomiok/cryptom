@@ -5,10 +5,15 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const myDbFile = "my.db"
+const BlockChainFile = "blockchain.db"
+
+func OpenForBc() *bolt.DB {
+	db, _ := bolt.Open(BlockChainFile, 0600, nil)
+	return db
+}
 
 func save() {
-	db, err := bolt.Open(myDbFile, 0600, nil)
+	db, err := bolt.Open(BlockChainFile, 0600, nil)
 
 	if err != nil {
 		panic(err)
@@ -22,11 +27,11 @@ func save() {
 }
 
 func update(tx *bolt.Tx) error {
-	b := tx.Bucket([]byte(myDbFile))
+	b := tx.Bucket([]byte(BlockChainFile))
 
 	if b == nil {
 		genesis := model.NewGenesis()
-		b, err := tx.CreateBucket([]byte(myDbFile))
+		b, err := tx.CreateBucket([]byte(BlockChainFile))
 
 		if err != nil {
 			panic(err)
