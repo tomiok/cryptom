@@ -9,6 +9,6 @@ type BlockChain struct {
 }
 
 func (bc *BlockChain) NewBlockChain() *BlockChain {
-	var tip [] byte
+	var tip []byte
 	db = db.OpenForBc()
 }

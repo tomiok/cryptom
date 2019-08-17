@@ -12,21 +12,23 @@ func OpenForBc() *bolt.DB {
 	return db
 }
 
-func save() {
-	db, err := bolt.Open(BlockChainFile, 0600, nil)
+func Save(db *bolt.DB) error {
+
+	err := db.Update(update)
 
 	if err != nil {
 		panic(err)
 	}
 
-	defer db.Close()
-
-	err := db.Update(update)
-
-
+	return err
 }
 
 func update(tx *bolt.Tx) error {
+	var tip []byte
+	return doUpdate(tx, tip)
+}
+
+func doUpdate(tx *bolt.Tx, tip []byte) error {
 	b := tx.Bucket([]byte(BlockChainFile))
 
 	if b == nil {
@@ -45,7 +47,3 @@ func update(tx *bolt.Tx) error {
 
 	return nil
 }
-
-
-
-
