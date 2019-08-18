@@ -9,7 +9,7 @@ type BlockChainIterator struct {
 	currentHash []byte
 }
 
-func (iterator *BlockChainIterator)Next(database *bolt.DB) *Block {
+func (iterator *BlockChainIterator) Next(database *bolt.DB) *Block {
 
 	var block *Block
 
