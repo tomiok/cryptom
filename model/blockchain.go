@@ -15,5 +15,11 @@ func (bc *BlockChain) NewBlockChain() {
 	if err != nil {
 		panic(err)
 	}
+}
 
+func (bc *BlockChain) AddBlock(data string) error {
+	dbInstance := db.OpenForBc()
+	err := db.AddBlock(data, dbInstance, bc)
+
+	return err
 }

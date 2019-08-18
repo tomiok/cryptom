@@ -38,6 +38,29 @@ func Save(db *bolt.DB) error {
 	return err
 }
 
+func AddBlock(data string, db *bolt.DB, bc *model.BlockChain) error {
+	var lastHash []byte
+
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(BlockChainFile))
+		lastHash = b.Get([]byte("l"))
+		return nil
+	})
+
+	newBlock := model.NewBlock(data, lastHash)
+
+	err = db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(BlockChainFile))
+		err := b.Put(newBlock.Hash, newBlock.Serialize())
+		err = b.Put([]byte("l"), newBlock.Hash)
+		bc.Tip = newBlock.Hash
+
+		return err
+	})
+
+	return err
+}
+
 func update(tx *bolt.Tx) error {
 	var tip []byte
 	return doUpdate(tx, tip)
