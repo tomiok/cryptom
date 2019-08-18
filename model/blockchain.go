@@ -5,10 +5,15 @@ import (
 )
 
 type BlockChain struct {
-	tip []byte
+	Tip []byte
 }
 
-func (bc *BlockChain) NewBlockChain() *BlockChain {
-	var tip []byte
-	db = db.OpenForBc()
+func (bc *BlockChain) NewBlockChain() {
+	dbInstance := db.OpenForBc()
+	err := db.Save(dbInstance)
+
+	if err != nil {
+		panic(err)
+	}
+
 }
