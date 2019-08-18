@@ -61,6 +61,8 @@ func AddBlock(data string, db *bolt.DB, bc *model.BlockChain) error {
 	return err
 }
 
+
+
 func update(tx *bolt.Tx) error {
 	var tip []byte
 	return doUpdate(tx, tip)

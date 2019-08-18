@@ -23,3 +23,7 @@ func (bc *BlockChain) AddBlock(data string) error {
 
 	return err
 }
+
+func (bc *BlockChain) Iterator() *BlockChainIterator {
+	return &BlockChainIterator{currentHash: bc.Tip}
+}

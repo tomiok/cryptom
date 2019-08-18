@@ -21,8 +21,14 @@ type Block struct {
 func NewBlock(data string, prevBlockHash []byte) *Block {
 	identifier, _ := uuid.NewUUID()
 
-	newBlock := &Block{identifier.String(), []byte(data), []byte{}, prevBlockHash, time.Now().Unix(),
-		Header{}, 0}
+	newBlock := &Block{
+		identifier.String(),
+		[]byte(data),
+		[]byte{},
+		prevBlockHash,
+		time.Now().Unix(),
+		Header{},
+		0}
 
 	pow := NewPow(newBlock)
 	nonce, hash := pow.Run()
