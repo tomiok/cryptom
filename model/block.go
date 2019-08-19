@@ -40,8 +40,7 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 
 func NewGenesis() *Block {
 	fmt.Println("Creating the GENESIS block")
-	var block Block
-	return &block
+	return &Block{Identifier: "", PrevBlockHash: nil}
 }
 
 func (block *Block) Serialize() []byte {

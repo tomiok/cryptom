@@ -1,4 +1,4 @@
-package model
+package blockchain
 
 import (
 	"cryptom/db"
@@ -25,5 +25,5 @@ func (bc *BlockChain) AddBlock(data string) error {
 }
 
 func (bc *BlockChain) Iterator() *BlockChainIterator {
-	return &BlockChainIterator{currentHash: bc.Tip}
+	return &BlockChainIterator{CurrentHash: bc.Tip}
 }

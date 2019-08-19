@@ -11,6 +11,8 @@ import (
 
 const targetBits = 16
 
+const maxBits = 256
+
 const maxNonce = math.MaxInt64
 
 type ProofOfWork struct {
@@ -20,7 +22,7 @@ type ProofOfWork struct {
 
 func NewPow(block *Block) *ProofOfWork {
 	target := big.NewInt(1)
-	target.Lsh(target, uint(256-targetBits))
+	target.Lsh(target, uint(maxBits-targetBits))
 
 	pow := &ProofOfWork{block, target}
 

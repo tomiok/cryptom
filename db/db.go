@@ -1,6 +1,7 @@
 package db
 
 import (
+	"cryptom/blockchain"
 	"cryptom/model"
 	"github.com/boltdb/bolt"
 )
@@ -38,7 +39,7 @@ func Save(db *bolt.DB) error {
 	return err
 }
 
-func AddBlock(data string, db *bolt.DB, bc *model.BlockChain) error {
+func AddBlock(data string, db *bolt.DB, bc *blockchain.BlockChain) error {
 	var lastHash []byte
 
 	err := db.View(func(tx *bolt.Tx) error {
