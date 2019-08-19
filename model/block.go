@@ -55,7 +55,7 @@ func (block *Block) Serialize() []byte {
 	return res.Bytes()
 }
 
-func Desearlize(b []byte) *Block {
+func Deserialize(b []byte) *Block {
 
 	var block Block
 	decoder := gob.NewDecoder(bytes.NewReader(b))

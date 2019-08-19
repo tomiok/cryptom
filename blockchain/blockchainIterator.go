@@ -17,7 +17,7 @@ func (iterator *BlockChainIterator) Next(database *bolt.DB) *model.Block {
 	err := database.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(db.BlockChainFile))
 		encodedBlock := b.Get(iterator.CurrentHash)
-		block = model.Desearlize(encodedBlock)
+		block = model.Deserialize(encodedBlock)
 
 		return nil
 	})
