@@ -18,6 +18,7 @@ type Block struct {
 	Nonce         int
 }
 
+// NewBlock is the function that creates a new block and add it into the chain
 func NewBlock(data string, prevBlockHash []byte) *Block {
 	identifier, _ := uuid.NewUUID()
 
