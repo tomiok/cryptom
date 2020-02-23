@@ -22,7 +22,7 @@ type Block struct {
 func NewBlock(data string, prevBlockHash []byte) *Block {
 	identifier, _ := uuid.NewUUID()
 
-	newBlock := &Block{
+	block := &Block{
 		identifier.String(),
 		[]byte(data),
 		[]byte{},
@@ -31,12 +31,12 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 		Header{},
 		0}
 
-	pow := NewPow(newBlock)
+	pow := NewPow(block)
 	nonce, hash := pow.Run()
 
-	newBlock.Hash = hash[:]
-	newBlock.Nonce = nonce
-	return newBlock
+	block.Hash = hash[:]
+	block.Nonce = nonce
+	return block
 }
 
 func NewGenesis() *Block {
@@ -44,6 +44,7 @@ func NewGenesis() *Block {
 	return &Block{Identifier: "", PrevBlockHash: nil}
 }
 
+// Serialize transform the block's data to slice of bytes
 func (block *Block) Serialize() []byte {
 	var res bytes.Buffer
 	encoder := gob.NewEncoder(&res)
@@ -56,8 +57,8 @@ func (block *Block) Serialize() []byte {
 	return res.Bytes()
 }
 
+// Deserialize transform an slice of bytes into a block
 func Deserialize(b []byte) *Block {
-
 	var block Block
 	decoder := gob.NewDecoder(bytes.NewReader(b))
 	err := decoder.Decode(&block)
