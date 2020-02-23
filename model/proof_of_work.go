@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	targetBits = 16
+	targetBits = 12 // arbitrary number, 24 will work for staging or prod (bigger is more difficult)
 	maxBits    = 256
 	maxNonce   = math.MaxInt64
 )
