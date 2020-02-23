@@ -6,13 +6,12 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-type BlockChainIterator struct {
+type BChainIterator struct {
 	CurrentHash []byte
-	database *bolt.DB
+	database    *bolt.DB
 }
 
-func (iterator *BlockChainIterator) Next() *model.Block {
-
+func (iterator *BChainIterator) Next() *model.Block {
 	var block *model.Block
 
 	err := iterator.database.View(func(tx *bolt.Tx) error {
