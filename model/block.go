@@ -41,7 +41,14 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 
 func NewGenesis() *Block {
 	fmt.Println("Creating the GENESIS block")
-	return &Block{Identifier: "", PrevBlockHash: nil}
+	identifier, _ := uuid.NewUUID()
+	block := &Block{Identifier: identifier.String(), PrevBlockHash: nil, Data: []byte("Genesis Block")}
+	pow := NewPow(block)
+	nonce, hash := pow.Run()
+	block.Hash = hash[:]
+	block.Nonce = nonce
+
+	return block
 }
 
 // Serialize transform the block's data to slice of bytes

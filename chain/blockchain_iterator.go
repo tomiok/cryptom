@@ -1,7 +1,6 @@
-package blockchain
+package chain
 
 import (
-	"cryptom/db"
 	"cryptom/model"
 	"github.com/boltdb/bolt"
 )
@@ -15,7 +14,7 @@ func (iterator *BChainIterator) Next() *model.Block {
 	var block *model.Block
 
 	err := iterator.database.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(db.BlockChainFile))
+		b := tx.Bucket([]byte(BlocksBucket))
 		encodedBlock := b.Get(iterator.CurrentHash)
 		block = model.Deserialize(encodedBlock)
 

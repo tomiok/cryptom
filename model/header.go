@@ -1,8 +1,8 @@
 package model
 
 type Header struct {
-	version       int64
-	prevBlockId   string
-	payloadDigest string
-	transactions  string
+	Version       int64
+	PrevBlockId   string
+	PayloadDigest string
+	Transactions  string
 }
