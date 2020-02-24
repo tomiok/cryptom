@@ -90,3 +90,7 @@ func (bc *Blockchain) PrintChain() {
 		}
 	}
 }
+
+func (bc *Blockchain) Clean() {
+	bc.db.cleanUp()
+}

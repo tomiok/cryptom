@@ -25,6 +25,7 @@ type BCDB interface {
 	update(block *model.Block) [] byte
 	view() []byte
 	viewIterator(iterator *BChainIterator) []byte
+	cleanUp()
 }
 
 type InMemoryBCDB struct {
@@ -74,4 +75,10 @@ func (i *InMemoryBCDB) viewIterator(iterator *BChainIterator) []byte {
 	})
 
 	return block
+}
+
+func (i *InMemoryBCDB) cleanUp() {
+	i.Update(func(tx *bolt.Tx) error {
+		return tx.DeleteBucket([]byte(BlocksBucket))
+	})
 }
