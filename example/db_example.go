@@ -9,6 +9,4 @@ func main() {
 	bc.AddBlock("#####")
 
 	bc.PrintChain()
-
-	bc.Clean()
 }

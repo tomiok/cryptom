@@ -15,45 +15,17 @@ const (
 
 type Blockchain struct {
 	Tip []byte
-	db  *bolt.DB
+	db  BCDB
 }
 
 func (bc *Blockchain) AddBlock(data string) {
-	var lastHash []byte
-
-	err := bc.db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(BlocksBucket))
-		lastHash = b.Get([]byte("l"))
-
-		return nil
-	})
-
-	if err != nil {
-		log.Panic(err)
-	}
-
+	lastHash := bc.db.view()
 	newBlock := model.NewBlock(data, lastHash)
-
-	err = bc.db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(BlocksBucket))
-		err := b.Put(newBlock.Hash, newBlock.Serialize())
-		if err != nil {
-			log.Panic(err)
-		}
-
-		err = b.Put([]byte("l"), newBlock.Hash)
-		if err != nil {
-			log.Panic(err)
-		}
-
-		bc.Tip = newBlock.Hash
-
-		return nil
-	})
+	bc.Tip = bc.db.update(newBlock)
 }
 
 func (bc *Blockchain) Iterator() *BChainIterator {
-	return &BChainIterator{ bc.Tip, bc.db}
+	return &BChainIterator{bc.Tip, bc.db}
 }
 
 // NewBlockchain creates a new Blockchain with genesis Block
@@ -97,9 +69,7 @@ func NewBlockchain() *Blockchain {
 		log.Panic(err)
 	}
 
-	bc := Blockchain{tip, db}
-
-	return &bc
+	return &Blockchain{tip, &InMemoryBCDB{db}}
 }
 
 func (bc *Blockchain) PrintChain() {
@@ -119,10 +89,4 @@ func (bc *Blockchain) PrintChain() {
 			break
 		}
 	}
-}
-
-func (bc *Blockchain) Clean() {
-	bc.db.Update(func(tx *bolt.Tx) error {
-		return tx.DeleteBucket([]byte(BlocksBucket))
-	})
 }

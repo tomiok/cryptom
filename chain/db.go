@@ -1,5 +1,11 @@
 package chain
 
+import (
+	"cryptom/model"
+	"github.com/boltdb/bolt"
+	"log"
+)
+
 /*
 In blocks, the key -> value pairs are:
 
@@ -15,4 +21,57 @@ In chainstate, the key -> value pairs are:
 'B' -> 32-byte block hash: the block hash up to which the database represents the unspent transaction outputs
 */
 
+type BCDB interface {
+	update(block *model.Block) [] byte
+	view() []byte
+	viewIterator(iterator *BChainIterator) []byte
+}
 
+type InMemoryBCDB struct {
+	*bolt.DB
+}
+
+func (i *InMemoryBCDB) update(block *model.Block) []byte {
+	var tip [] byte
+	i.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(BlocksBucket))
+		err := b.Put(block.Hash, block.Serialize())
+		if err != nil {
+			log.Panic(err)
+		}
+
+		err = b.Put([]byte("l"), block.Hash)
+		if err != nil {
+			log.Panic(err)
+		}
+
+		tip = block.Hash
+
+		return nil
+	})
+	return tip
+}
+
+func (i *InMemoryBCDB) view() []byte {
+	var lastHash []byte
+	i.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(BlocksBucket))
+		lastHash = b.Get([]byte("l"))
+
+		return nil
+	})
+
+	return lastHash
+}
+
+func (i *InMemoryBCDB) viewIterator(iterator *BChainIterator) []byte {
+	var block []byte
+	i.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(BlocksBucket))
+		block = b.Get(iterator.CurrentHash)
+
+		return nil
+	})
+
+	return block
+}
