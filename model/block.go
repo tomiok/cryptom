@@ -2,6 +2,7 @@ package model
 
 import (
 	"bytes"
+	"cryptom/transaction"
 	"encoding/gob"
 	"fmt"
 	"github.com/google/uuid"
@@ -11,6 +12,7 @@ import (
 type Block struct {
 	Identifier    string
 	Data          []byte
+	Transactions  []transaction.Tx
 	Hash          []byte
 	PrevBlockHash []byte
 	Timestamp     int64
@@ -19,12 +21,13 @@ type Block struct {
 }
 
 // NewBlock is the function that creates a new block and add it into the chain
-func NewBlock(data string, prevBlockHash []byte) *Block {
+func NewBlock(data string, transactions []transaction.Tx, prevBlockHash []byte) *Block {
 	identifier, _ := uuid.NewUUID()
 
 	block := &Block{
 		identifier.String(),
 		[]byte(data),
+		transactions,
 		[]byte{},
 		prevBlockHash,
 		time.Now().Unix(),
@@ -39,16 +42,9 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 	return block
 }
 
-func NewGenesis() *Block {
+func NewGenesis(coinbase transaction.Tx) *Block {
 	fmt.Println("Creating the GENESIS block")
-	identifier, _ := uuid.NewUUID()
-	block := &Block{Identifier: identifier.String(), PrevBlockHash: nil, Data: []byte("Genesis Block")}
-	pow := NewPow(block)
-	nonce, hash := pow.Run()
-	block.Hash = hash[:]
-	block.Nonce = nonce
-
-	return block
+	return NewBlock("", []transaction.Tx{coinbase}, []byte{})
 }
 
 // Serialize transform the block's data to slice of bytes

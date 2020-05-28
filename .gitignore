@@ -1,3 +1,4 @@
 .idea/
 cryptom
 chain.db
+.DS_Store

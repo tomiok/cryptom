@@ -2,6 +2,7 @@ package chain
 
 import (
 	"cryptom/model"
+	"cryptom/transaction"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
@@ -9,8 +10,9 @@ import (
 )
 
 const (
-	BlockChainFile = "chain.db"
-	BlocksBucket   = "blocks"
+	BlockChainFile   = "chain.db"
+	BlocksBucket     = "blocks"
+	GenesisSignature = "something important"
 )
 
 type Blockchain struct {
@@ -18,9 +20,9 @@ type Blockchain struct {
 	db  BCDB
 }
 
-func (bc *Blockchain) AddBlock(data string) {
+func (bc *Blockchain) AddBlock(data string, txs []transaction.Tx) {
 	lastHash := bc.db.view()
-	newBlock := model.NewBlock(data, lastHash)
+	newBlock := model.NewBlock(data, txs, lastHash)
 	bc.Tip = bc.db.update(newBlock)
 }
 
@@ -29,7 +31,7 @@ func (bc *Blockchain) Iterator() *BChainIterator {
 }
 
 // NewBlockchain creates a new Blockchain with genesis Block
-func NewBlockchain() *Blockchain {
+func NewBlockchain(address string) *Blockchain {
 	var tip []byte
 	db, err := bolt.Open(BlockChainFile, 0600, nil)
 	if err != nil {
@@ -41,7 +43,7 @@ func NewBlockchain() *Blockchain {
 
 		if b == nil {
 			fmt.Println("No existing blockchain found. Creating a new one...")
-			genesis := model.NewGenesis()
+			genesis := model.NewGenesis(transaction.MakeCoinBaseTx(address, GenesisSignature))
 
 			b, err := tx.CreateBucket([]byte(BlocksBucket))
 			if err != nil {

@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	targetBits = 20 // arbitrary number, 24 will work for staging or prod (bigger is more difficult)
+	targetBits = 16 // arbitrary number, 24 will work for staging or prod (bigger is more difficult)
 	maxBits    = 256
 	maxNonce   = math.MaxInt64
 )
@@ -47,7 +47,7 @@ func (pow *ProofOfWork) prepareData(nonce int) []byte {
 func (pow *ProofOfWork) Run() (int, []byte) {
 	var hashInt big.Int
 	var hash [32]byte
-	nonce := 0
+	var nonce int
 
 	fmt.Printf("Mining the block containing \"%s\"\n", pow.Block.Data)
 	for nonce < maxNonce {
