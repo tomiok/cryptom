@@ -2,6 +2,7 @@ package model
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"cryptom/transaction"
 	"encoding/gob"
 	"fmt"
@@ -25,14 +26,14 @@ func NewBlock(data string, transactions []transaction.Tx, prevBlockHash []byte) 
 	identifier, _ := uuid.NewUUID()
 
 	block := &Block{
-		identifier.String(),
-		[]byte(data),
-		transactions,
-		[]byte{},
-		prevBlockHash,
-		time.Now().Unix(),
-		Header{},
-		0}
+		Identifier:    identifier.String(),
+		Data:          []byte(data),
+		Transactions:  transactions,
+		Hash:          []byte{},
+		PrevBlockHash: prevBlockHash,
+		Timestamp:     time.Now().UnixNano(),
+		Header:        Header{},
+		Nonce:         0}
 
 	pow := NewPow(block)
 	nonce, hash := pow.Run()
@@ -42,9 +43,9 @@ func NewBlock(data string, transactions []transaction.Tx, prevBlockHash []byte) 
 	return block
 }
 
-func NewGenesis(coinbase transaction.Tx) *Block {
+func NewGenesis(coinBase transaction.Tx) *Block {
 	fmt.Println("Creating the GENESIS block")
-	return NewBlock("", []transaction.Tx{coinbase}, []byte{})
+	return NewBlock("", []transaction.Tx{coinBase}, []byte{})
 }
 
 // Serialize transform the block's data to slice of bytes
@@ -71,4 +72,18 @@ func Deserialize(b []byte) *Block {
 	}
 
 	return &block
+}
+
+// hash all the transactions in the block
+func (b *Block) HashTransactions() []byte {
+	var (
+		hashes [][]byte
+		hash   [32]byte
+	)
+
+	for _, tx := range b.Transactions {
+		hashes = append(hashes, tx.ID)
+	}
+	hash = sha256.Sum256(bytes.Join(hashes, []byte{}))
+	return hash[:]
 }

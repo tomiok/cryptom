@@ -1,5 +1,12 @@
 package transaction
 
+import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/gob"
+	"log"
+)
+
 /**
 Outputs are where “coins” are stored. Each output comes with an unlocking script, which determines the logic
 of unlocking the output. Every new transaction must have at least one input and output. An input references an output
@@ -14,7 +21,16 @@ type Tx struct {
 }
 
 func (tx *Tx) SetID() {
-	tx.ID = []byte{1223232}
+	var encoded bytes.Buffer
+	var hash [32]byte
+
+	enc := gob.NewEncoder(&encoded)
+	err := enc.Encode(tx)
+	if err != nil {
+		log.Panic(err)
+	}
+	hash = sha256.Sum256(encoded.Bytes())
+	tx.ID = hash[:]
 }
 
 // The input of the transaction
