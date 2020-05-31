@@ -22,7 +22,7 @@ In chainstate, the key -> value pairs are:
 */
 
 type BCDB interface {
-	update(block *model.Block) [] byte
+	update(block *model.Block) []byte
 	view() []byte
 	viewIterator(iterator *BChainIterator) []byte
 	cleanUp()
@@ -33,7 +33,7 @@ type InMemoryBCDB struct {
 }
 
 func (i *InMemoryBCDB) update(block *model.Block) []byte {
-	var tip [] byte
+	var tip []byte
 	i.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(BlocksBucket))
 		err := b.Put(block.Hash, block.Serialize())
