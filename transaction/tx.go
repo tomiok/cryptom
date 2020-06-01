@@ -14,6 +14,8 @@ from a previous transaction and provides data (the ScriptSig field) that is used
 to unlock it and use its value to create new outputs.
 */
 
+const coinBaseSignature = "we fight for a better world"
+
 type Tx struct {
 	ID   []byte
 	Vin  []TxInput
@@ -48,7 +50,7 @@ type TxOutput struct {
 // MakeCoinBaseTx is the "egg" for the transactions. Is the beginning of the transaction history.
 func MakeCoinBaseTx(to, signature string) Tx {
 	if signature == "" {
-		signature = "some signature"
+		signature = coinBaseSignature
 	}
 
 	txIn := TxInput{
@@ -68,4 +70,19 @@ func MakeCoinBaseTx(to, signature string) Tx {
 		Vout: []TxOutput{txOut},
 	}
 	return tx
+}
+func (tx *Tx) IsCoinBase() bool {
+	return len(tx.Vin) == 1 && len(tx.Vin[0].TxID) == 0 && tx.Vin[0].Vout == -1
+}
+
+func (tx *Tx) Serialize() []byte {
+	var res bytes.Buffer
+	encoder := gob.NewEncoder(&res)
+	err := encoder.Encode(tx)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return res.Bytes()
 }

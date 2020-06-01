@@ -49,10 +49,10 @@ func NewGenesis(coinBase transaction.Tx) *Block {
 }
 
 // Serialize transform the block's data to slice of bytes
-func (block *Block) Serialize() []byte {
+func (b *Block) Serialize() []byte {
 	var res bytes.Buffer
 	encoder := gob.NewEncoder(&res)
-	err := encoder.Encode(block)
+	err := encoder.Encode(b)
 
 	if err != nil {
 		panic(err)
@@ -75,6 +75,7 @@ func Deserialize(b []byte) *Block {
 }
 
 // hash all the transactions in the block
+// TODO implement a merkle tree for store transaction hashes
 func (b *Block) HashTransactions() []byte {
 	var (
 		hashes [][]byte
@@ -82,7 +83,7 @@ func (b *Block) HashTransactions() []byte {
 	)
 
 	for _, tx := range b.Transactions {
-		hashes = append(hashes, tx.ID)
+		hashes = append(hashes, tx.Serialize())
 	}
 	hash = sha256.Sum256(bytes.Join(hashes, []byte{}))
 	return hash[:]

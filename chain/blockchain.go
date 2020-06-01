@@ -10,9 +10,8 @@ import (
 )
 
 const (
-	BlockChainFile   = "chain.db"
-	BlocksBucket     = "blocks"
-	GenesisSignature = "something important"
+	BlockChainFile = "chain.db"
+	BlocksBucket   = "blocks"
 )
 
 type Blockchain struct {
@@ -43,7 +42,7 @@ func NewBlockchain(address string) *Blockchain {
 
 		if b == nil {
 			fmt.Println("No existing blockchain found. Creating a new one...")
-			genesis := model.NewGenesis(transaction.MakeCoinBaseTx(address, GenesisSignature))
+			genesis := model.NewGenesis(transaction.MakeCoinBaseTx(address, ""))
 
 			b, err := tx.CreateBucket([]byte(BlocksBucket))
 			if err != nil {
