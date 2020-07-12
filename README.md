@@ -1,5 +1,7 @@
 # cryptom
 
+### work in progress
+
 First spec for a personal crypto currency
 
 ### Next steps
