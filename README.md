@@ -1,4 +1,4 @@
-# cryptom
+# mateycoin
 
 ### work in progress
 
