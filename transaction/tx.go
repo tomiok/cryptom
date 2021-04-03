@@ -13,7 +13,6 @@ of unlocking the output. Every new transaction must have at least one input and 
 from a previous transaction and provides data (the ScriptSig field) that is used in the output’s unlocking script
 to unlock it and use its value to create new outputs.
 */
-
 const coinBaseSignature = "we fight for a better world"
 
 type Tx struct {
