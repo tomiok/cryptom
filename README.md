@@ -1,4 +1,6 @@
-# cryptom
+# mateycoin
+
+### work in progress
 
 First spec for a personal crypto currency
 
