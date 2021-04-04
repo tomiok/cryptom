@@ -1,7 +1,6 @@
-package chain
+package blocks
 
 import (
-	"cryptom/model"
 	bolt "go.etcd.io/bbolt"
 	"log"
 )
@@ -22,17 +21,22 @@ In chainstate, the key -> value pairs are:
 */
 
 type BCDB interface {
-	update(block *model.Block) []byte
-	view() []byte
-	viewIterator(iterator *BChainIterator) []byte
-	cleanUp()
+	UpdateDB(block *Block) []byte
+	ViewDB() []byte
+	ViewIterator(iterator *BChainIterator) []byte
+	CleanupDB()
+	CloseDB()
 }
 
 type InMemoryBCDB struct {
 	*bolt.DB
 }
 
-func (i *InMemoryBCDB) update(block *model.Block) []byte {
+func (i *InMemoryBCDB) CloseDB() {
+	i.Close()
+}
+
+func (i *InMemoryBCDB) UpdateDB(block *Block) []byte {
 	var tip []byte
 	i.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(BlocksBucket))
@@ -53,7 +57,7 @@ func (i *InMemoryBCDB) update(block *model.Block) []byte {
 	return tip
 }
 
-func (i *InMemoryBCDB) view() []byte {
+func (i *InMemoryBCDB) ViewDB() []byte {
 	var lastHash []byte
 	i.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(BlocksBucket))
@@ -65,7 +69,7 @@ func (i *InMemoryBCDB) view() []byte {
 	return lastHash
 }
 
-func (i *InMemoryBCDB) viewIterator(iterator *BChainIterator) []byte {
+func (i *InMemoryBCDB) ViewIterator(iterator *BChainIterator) []byte {
 	var block []byte
 	i.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(BlocksBucket))
@@ -77,7 +81,7 @@ func (i *InMemoryBCDB) viewIterator(iterator *BChainIterator) []byte {
 	return block
 }
 
-func (i *InMemoryBCDB) cleanUp() {
+func (i *InMemoryBCDB) CleanupDB() {
 	i.Update(func(tx *bolt.Tx) error {
 		return tx.DeleteBucket([]byte(BlocksBucket))
 	})

@@ -1,10 +1,9 @@
-package model
+package blocks
 
 import (
 	"bytes"
 	"crypto/sha256"
 	"cryptom/internal"
-	"cryptom/transaction"
 	"encoding/gob"
 	"fmt"
 	"log"
@@ -15,7 +14,7 @@ type Block struct {
 	Timestamp     int64
 	Identifier    string
 	Data          []byte
-	Transactions  []*transaction.Tx
+	Transactions  []*Tx
 	Hash          []byte
 	PrevBlockHash []byte
 	Header        Header
@@ -23,16 +22,14 @@ type Block struct {
 }
 
 // NewBlock is the function that creates a new block and add it into the chain
-func NewBlock(data string, transactions []*transaction.Tx, prevBlockHash []byte) *Block {
+func NewBlock(data string, transactions []*Tx, prevBlockHash []byte) *Block {
 	block := &Block{
 		Identifier:    internal.GenerateID(),
 		Data:          []byte(data),
 		Transactions:  transactions,
-		Hash:          []byte{},
 		PrevBlockHash: prevBlockHash,
-		Timestamp:     time.Now().UnixNano(),
-		Header:        Header{},
-		Nonce:         0}
+		Timestamp:     time.Now().Unix(),
+	}
 
 	pow := NewPow(block)
 	nonce, hash := pow.Run()
@@ -42,9 +39,9 @@ func NewBlock(data string, transactions []*transaction.Tx, prevBlockHash []byte)
 	return block
 }
 
-func NewGenesis(base *transaction.Tx) *Block {
+func NewGenesis(base *Tx) *Block {
 	fmt.Println("Creating the GENESIS block")
-	return NewBlock("GENESIS", []*transaction.Tx{base}, []byte{})
+	return NewBlock("GENESIS", []*Tx{base}, []byte{})
 }
 
 // Serialize transform the block's data to slice of bytes

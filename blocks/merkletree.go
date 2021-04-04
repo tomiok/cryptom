@@ -1,4 +1,4 @@
-package chain
+package blocks
 
 import "crypto/sha256"
 

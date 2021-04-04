@@ -1,4 +1,4 @@
-package model
+package blocks
 
 import (
 	"bytes"
@@ -30,19 +30,17 @@ func NewPow(block *Block) *ProofOfWork {
 }
 
 func (pow *ProofOfWork) prepareData(nonce int) []byte {
-	data := bytes.Join(
+	return bytes.Join(
 		[][]byte{
 			pow.Block.PrevBlockHash,
 			pow.Block.Data,
 			pow.Block.HashTransactions(),
-			utils.IntToHex(pow.Block.Timestamp),
-			utils.IntToHex(int64(targetBits)),
-			utils.IntToHex(int64(nonce)),
+			internal.IntToHex(pow.Block.Timestamp),
+			internal.IntToHex(int64(targetBits)),
+			internal.IntToHex(int64(nonce)),
 		},
 		[]byte{},
 	)
-
-	return data
 }
 
 func (pow *ProofOfWork) Run() (int, []byte) {

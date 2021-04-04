@@ -1,4 +1,4 @@
-package model
+package blocks
 
 type Header struct {
 	Version       int64

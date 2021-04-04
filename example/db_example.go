@@ -1,9 +1,11 @@
 package main
 
-import "cryptom/chain"
+import (
+	"cryptom/blocks"
+)
 
 func main() {
-	bc := chain.NewBlockchain("some address")
+	bc := blocks.NewBlockchain("some address")
 	bc.PrintChain()
 
 	// delete
