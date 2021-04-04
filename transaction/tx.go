@@ -13,7 +13,7 @@ of unlocking the output. Every new transaction must have at least one input and 
 from a previous transaction and provides data (the ScriptSig field) that is used in the output’s unlocking script
 to unlock it and use its value to create new outputs.
 */
-const coinBaseSignature = "we fight for a better world"
+const baseSignature = "we fight for a better world"
 
 type Tx struct {
 	ID   []byte
@@ -22,8 +22,10 @@ type Tx struct {
 }
 
 func (tx *Tx) SetID() {
-	var encoded bytes.Buffer
-	var hash [32]byte
+	var (
+		encoded bytes.Buffer
+		hash    [32]byte
+	)
 
 	enc := gob.NewEncoder(&encoded)
 	err := enc.Encode(tx)
@@ -47,15 +49,15 @@ type TxOutput struct {
 }
 
 // MakeCoinBaseTx is the "egg" for the transactions. Is the beginning of the transaction history.
-func MakeCoinBaseTx(to, signature string) Tx {
-	if signature == "" {
-		signature = coinBaseSignature
+func MakeCoinBaseTx(to, data string) *Tx {
+	if data == "" {
+		data = baseSignature
 	}
 
 	txIn := TxInput{
 		TxID:            []byte{},
 		Vout:            -1,
-		ScriptSignature: signature,
+		ScriptSignature: data,
 	}
 
 	txOut := TxOutput{
@@ -68,7 +70,7 @@ func MakeCoinBaseTx(to, signature string) Tx {
 		Vin:  []TxInput{txIn},
 		Vout: []TxOutput{txOut},
 	}
-	return tx
+	return &tx
 }
 func (tx *Tx) IsCoinBase() bool {
 	return len(tx.Vin) == 1 && len(tx.Vin[0].TxID) == 0 && tx.Vin[0].Vout == -1

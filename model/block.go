@@ -3,30 +3,29 @@ package model
 import (
 	"bytes"
 	"crypto/sha256"
+	"cryptom/internal"
 	"cryptom/transaction"
 	"encoding/gob"
 	"fmt"
-	"github.com/google/uuid"
+	"log"
 	"time"
 )
 
 type Block struct {
+	Timestamp     int64
 	Identifier    string
 	Data          []byte
-	Transactions  []transaction.Tx
+	Transactions  []*transaction.Tx
 	Hash          []byte
 	PrevBlockHash []byte
-	Timestamp     int64
 	Header        Header
 	Nonce         int
 }
 
 // NewBlock is the function that creates a new block and add it into the chain
-func NewBlock(data string, transactions []transaction.Tx, prevBlockHash []byte) *Block {
-	identifier, _ := uuid.NewUUID()
-
+func NewBlock(data string, transactions []*transaction.Tx, prevBlockHash []byte) *Block {
 	block := &Block{
-		Identifier:    identifier.String(),
+		Identifier:    internal.GenerateID(),
 		Data:          []byte(data),
 		Transactions:  transactions,
 		Hash:          []byte{},
@@ -43,9 +42,9 @@ func NewBlock(data string, transactions []transaction.Tx, prevBlockHash []byte) 
 	return block
 }
 
-func NewGenesis(coinBase transaction.Tx) *Block {
+func NewGenesis(base *transaction.Tx) *Block {
 	fmt.Println("Creating the GENESIS block")
-	return NewBlock("", []transaction.Tx{coinBase}, []byte{})
+	return NewBlock("GENESIS", []*transaction.Tx{base}, []byte{})
 }
 
 // Serialize transform the block's data to slice of bytes
@@ -55,7 +54,8 @@ func (b *Block) Serialize() []byte {
 	err := encoder.Encode(b)
 
 	if err != nil {
-		panic(err)
+		log.Println("cannot serialize " + err.Error())
+		return nil
 	}
 
 	return res.Bytes()
@@ -68,9 +68,9 @@ func Deserialize(b []byte) *Block {
 	err := decoder.Decode(&block)
 
 	if err != nil {
-		panic(err)
+		log.Println("cannot deserialize " + err.Error())
+		return nil
 	}
-
 	return &block
 }
 

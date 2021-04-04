@@ -2,7 +2,7 @@ package chain
 
 import (
 	"cryptom/model"
-	"github.com/boltdb/bolt"
+	bolt "go.etcd.io/bbolt"
 	"log"
 )
 

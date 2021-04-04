@@ -9,8 +9,10 @@ import (
 func main() {
 	//need to move this to example package
 	fmt.Println("Init ")
-	block := model.NewGenesis(tx.MakeCoinBaseTx("", "here we are"))
-	model.NewBlock("some data", block.PrevBlockHash)
-	pow := model.NewPow(block)
-	pow.Validate()
+	genesis := model.NewGenesis(tx.MakeCoinBaseTx("", "here we are"))
+	b1 := model.NewBlock("some data", nil, genesis.PrevBlockHash)
+	pow1 := model.NewPow(genesis)
+	pow2 := model.NewPow(b1)
+	fmt.Println(pow1.Validate())
+	fmt.Println(pow2.Validate())
 }

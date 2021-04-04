@@ -3,7 +3,7 @@ package model
 import (
 	"bytes"
 	"crypto/sha256"
-	"cryptom/utils"
+	"cryptom/internal"
 	"fmt"
 	"math"
 	"math/big"

@@ -4,7 +4,7 @@ import (
 	"cryptom/model"
 	"cryptom/transaction"
 	"fmt"
-	"github.com/boltdb/bolt"
+	bolt "go.etcd.io/bbolt"
 	"log"
 	"strconv"
 )
