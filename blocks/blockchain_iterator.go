@@ -1,18 +1,25 @@
 package blocks
 
+import (
+	bolt "go.etcd.io/bbolt"
+)
+
 type BChainIterator struct {
-	CurrentHash []byte
-	database    BCDB
+	currentHash []byte
+	db          BCDB
 }
 
-func (iterator *BChainIterator) Next() *Block {
+func (i *BChainIterator) Next() *Block {
 	var block *Block
 
-	bytes := iterator.database.ViewIterator(iterator)
+	i.db.ViewChain(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucketBlocks))
+		encodedBlock := b.Get(i.currentHash)
+		block = DeserializeBlock(encodedBlock)
 
-	block = Deserialize(bytes)
+		return nil
+	})
 
-	iterator.CurrentHash = block.PrevBlockHash
-
+	i.currentHash = block.PrevBlockHash
 	return block
 }

@@ -3,7 +3,7 @@ module cryptom
 require (
 	github.com/google/uuid v1.2.0
 	go.etcd.io/bbolt v1.3.5
-	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
+	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 )
 
 go 1.13

@@ -8,7 +8,7 @@ import (
 func main() {
 	//need to move this to example package
 	fmt.Println("Init ")
-	genesis := blocks.NewGenesis(blocks.MakeCoinBaseTx("", "here we are"))
+	genesis := blocks.NewGenesisBlock(blocks.NewCoinBaseTx("", "here we are"))
 	b1 := blocks.NewBlock("some data", nil, genesis.PrevBlockHash)
 	pow1 := blocks.NewPow(genesis)
 	pow2 := blocks.NewPow(b1)

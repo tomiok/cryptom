@@ -26,6 +26,7 @@ type BCDB interface {
 	ViewIterator(iterator *BChainIterator) []byte
 	CleanupDB()
 	CloseDB()
+	ViewChain(func(tx *bolt.Tx) error)
 }
 
 type InMemoryBCDB struct {
@@ -36,10 +37,21 @@ func (i *InMemoryBCDB) CloseDB() {
 	i.Close()
 }
 
+func (i *InMemoryBCDB) ViewChain(fn func(tx *bolt.Tx) error) {
+	db, err := bolt.Open(blockChainFile, 0600, nil)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+	db.View(fn)
+}
+
 func (i *InMemoryBCDB) UpdateDB(block *Block) []byte {
+	db, _ := bolt.Open(blockChainFile, 0600, nil)
+	defer db.Close()
 	var tip []byte
-	i.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(BlocksBucket))
+	db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucketBlocks))
 		err := b.Put(block.Hash, block.Serialize())
 		if err != nil {
 			log.Panic(err)
@@ -58,9 +70,11 @@ func (i *InMemoryBCDB) UpdateDB(block *Block) []byte {
 }
 
 func (i *InMemoryBCDB) ViewDB() []byte {
+	db, _ := bolt.Open(blockChainFile, 0600, nil)
+	defer db.Close()
 	var lastHash []byte
 	i.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(BlocksBucket))
+		b := tx.Bucket([]byte(bucketBlocks))
 		lastHash = b.Get([]byte("l"))
 
 		return nil
@@ -70,10 +84,12 @@ func (i *InMemoryBCDB) ViewDB() []byte {
 }
 
 func (i *InMemoryBCDB) ViewIterator(iterator *BChainIterator) []byte {
+	db, _ := bolt.Open(blockChainFile, 0600, nil)
+	defer db.Close()
 	var block []byte
 	i.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(BlocksBucket))
-		block = b.Get(iterator.CurrentHash)
+		b := tx.Bucket([]byte(bucketBlocks))
+		block = b.Get(iterator.currentHash)
 
 		return nil
 	})
@@ -83,6 +99,6 @@ func (i *InMemoryBCDB) ViewIterator(iterator *BChainIterator) []byte {
 
 func (i *InMemoryBCDB) CleanupDB() {
 	i.Update(func(tx *bolt.Tx) error {
-		return tx.DeleteBucket([]byte(BlocksBucket))
+		return tx.DeleteBucket([]byte(bucketBlocks))
 	})
 }

@@ -39,7 +39,7 @@ func NewBlock(data string, transactions []*Tx, prevBlockHash []byte) *Block {
 	return block
 }
 
-func NewGenesis(base *Tx) *Block {
+func NewGenesisBlock(base *Tx) *Block {
 	fmt.Println("Creating the GENESIS block")
 	return NewBlock("GENESIS", []*Tx{base}, []byte{})
 }
@@ -58,16 +58,16 @@ func (b *Block) Serialize() []byte {
 	return res.Bytes()
 }
 
-// Deserialize transform an slice of bytes into a block
-func Deserialize(b []byte) *Block {
+// DeserializeBlock deserializes a block
+func DeserializeBlock(d []byte) *Block {
 	var block Block
-	decoder := gob.NewDecoder(bytes.NewReader(b))
-	err := decoder.Decode(&block)
 
+	decoder := gob.NewDecoder(bytes.NewReader(d))
+	err := decoder.Decode(&block)
 	if err != nil {
-		log.Println("cannot deserialize " + err.Error())
-		return nil
+		log.Panic(err)
 	}
+
 	return &block
 }
 
@@ -80,7 +80,7 @@ func (b *Block) HashTransactions() []byte {
 	)
 
 	for _, tx := range b.Transactions {
-		hashes = append(hashes, tx.Serialize())
+		hashes = append(hashes, tx.Hash())
 	}
 	hash = sha256.Sum256(bytes.Join(hashes, []byte{}))
 	return hash[:]
